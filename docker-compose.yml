@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    container_name: voting_db
+    restart: always
+    environment:
+      TZ: Asia/Taipei
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: voting_system
+    volumes:
+      - ./data/:/var/lib/postgresql/data
+    ports:
+      - "15432:5432"
+
+  server:
+    build: 
+      context: ./voting-system-be
+    image: voting-system-be
+    restart: always
+    container_name: voting_system_be
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgres@db:5432/voting_system"
+    volumes:
+      - ./voting-system-be:/app
+    ports:
+      - "3000:3000"
+    command: npm run dev
+
+  frontend:
+    build: 
+      context: ./voting-system-fe
+    image: voting-system-fe
+    container_name: voting_system_fe
+    restart: always
+    ports:
+      - "4200:80"
+    depends_on:
+      - server
