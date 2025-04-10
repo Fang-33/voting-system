@@ -21,7 +21,7 @@
 ```
 voting-system/
 ├── docker-compose.yml         # 整合前後端與資料庫的配置檔
-├── update-and-run.sh          # 自動更新與啟動腳本
+├── update-and-run.js          # 自動更新與啟動腳本
 ├── .gitignore                 # Git 忽略檔案設定
 ├── voting-system-fe/          # 前端專案 (Angular) - 由腳本自動管理
 │   ├── Dockerfile             # 前端 Docker 配置檔
@@ -36,7 +36,6 @@ voting-system/
 
 - Docker 與 Docker Compose
 - Git
-- Bash 環境 (Linux/macOS/WSL)
 
 ## 系統架構
 
