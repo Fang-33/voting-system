@@ -1,0 +1,73 @@
+# 依賴套件
+node_modules/
+package-lock.json
+
+# 打包和壓縮檔案
+*.tar
+*.tar.gz
+*.zip
+
+# 環境變數
+.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
+
+# 日誌檔案
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# 編譯輸出
+dist/
+build/
+out/
+.next/
+
+# IDE 和編輯器檔案
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+.project
+.classpath
+.settings/
+*.swp
+*.swo
+
+# 除錯檔案
+.nyc_output/
+coverage/
+
+# 暫存檔案
+tmp/
+temp/
+sessions/
+.cache/
+
+# Prisma
+prisma/.env
+.prisma/
+prisma/dev.db
+
+# 上傳的檔案 (如果你的專案有檔案上傳功能)
+uploads/
+
+# Docker 相關
+.dockerignore
+docker-compose.override.yml
+
+# 系統檔案
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# 資料庫資料檔案
+data/

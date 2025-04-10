@@ -25,11 +25,8 @@ services:
       - db
     environment:
       DATABASE_URL: "postgresql://postgres:postgres@db:5432/voting_system"
-    volumes:
-      - ./voting-system-be:/app
     ports:
       - "3000:3000"
-    command: npm run dev
 
   frontend:
     build: 
