@@ -42,7 +42,7 @@ if [ -d "voting-system-be" ]; then
     cd ..
 else
     echo "後端專案目錄不存在，正在克隆..."
-    git clone http://192.168.100.202/warriors/voteting-system-be.git voting-system-be
+    git clone http://192.168.100.202/warriors/voting-system-fe.git voting-system-be
     if [ $? -ne 0 ]; then
         echo -e "${RED}後端專案克隆失敗！${NC}"
         exit 1
