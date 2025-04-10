@@ -16,6 +16,10 @@
 系統支援多種投票活動狀態（進行中、已結束），並能清晰展示每個投票活動的詳細信息和參與人數。
 使用者能夠便捷地管理自己創建的投票活動，也能輕鬆地參與其他使用者的投票。
 
+![Register](https://github.com/user-attachments/assets/26237016-83bd-4d31-a9b0-99ef8fbf827d)
+![EventList](https://github.com/user-attachments/assets/19c4f870-ad7e-4a86-be46-741bce9ccfc6)
+![EventDetail](https://github.com/user-attachments/assets/dd5c23e6-67b6-42fb-8a80-5c49caafca88)
+
 ## 專案結構
 
 ```
