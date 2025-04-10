@@ -135,13 +135,60 @@ CMD ["npm", "run", "dev"]`;
   }
 }
 
+// 創建啟動腳本 (用於在容器內執行 Prisma 遷移)
+function createStartScript() {
+  const startScriptPath = path.join("voting-system-be", "start.sh");
+
+  if (!fileExists(startScriptPath)) {
+    log("創建後端啟動腳本...", "info");
+
+    const startScriptContent = `#!/bin/sh
+# 等待資料庫就緒
+echo "Waiting for database to be ready..."
+sleep 5
+
+# 執行遷移
+echo "Running migrations..."
+npx prisma migrate deploy
+
+# 啟動應用
+echo "Starting application..."
+npm run dev`;
+
+    fs.writeFileSync(startScriptPath, startScriptContent);
+    // 設定執行權限
+    fs.chmodSync(startScriptPath, "755");
+    log("後端啟動腳本已創建", "success");
+  }
+}
+
+// 更新後端 Dockerfile 以使用啟動腳本
+function updateBackendDockerfile() {
+  const dockerfilePath = path.join("voting-system-be", "Dockerfile");
+
+  if (fileExists(dockerfilePath)) {
+    const dockerfileContent = fs.readFileSync(dockerfilePath, "utf8");
+
+    // 檢查是否已經使用啟動腳本
+    if (!dockerfileContent.includes("./start.sh")) {
+      const updatedContent = dockerfileContent.replace(
+        'CMD ["npm", "run", "dev"]',
+        'COPY start.sh ./\nRUN chmod +x ./start.sh\nCMD ["./start.sh"]'
+      );
+
+      fs.writeFileSync(dockerfilePath, updatedContent);
+      log("後端 Dockerfile 已更新為使用啟動腳本", "success");
+    }
+  }
+}
+
 // 主程序
 async function main() {
   try {
     log("=== 投票系統自動更新與啟動腳本 ===", "info");
 
     // 1. 檢查並更新前端專案
-    log("\n[1/6] 檢查並更新前端專案...", "info");
+    log("\n[1/7] 檢查並更新前端專案...", "info");
     if (directoryExists("voting-system-fe")) {
       log("前端專案目錄已存在，更新中...", "info");
       runCommand("cd voting-system-fe && git pull origin main");
@@ -151,7 +198,7 @@ async function main() {
     }
 
     // 2. 檢查並更新後端專案
-    log("\n[2/6] 檢查並更新後端專案...", "info");
+    log("\n[2/7] 檢查並更新後端專案...", "info");
     if (directoryExists("voting-system-be")) {
       log("後端專案目錄已存在，更新中...", "info");
       runCommand("cd voting-system-be && git pull origin main");
@@ -161,61 +208,34 @@ async function main() {
     }
 
     // 3. 檢查前端 Dockerfile
-    log("\n[3/6] 檢查前端 Dockerfile...", "info");
+    log("\n[3/7] 檢查前端 Dockerfile...", "info");
     createFrontendDockerfile();
 
     // 4. 檢查後端 Dockerfile
-    log("\n[4/6] 檢查後端 Dockerfile...", "info");
+    log("\n[4/7] 檢查後端 Dockerfile...", "info");
     createBackendDockerfile();
 
-    // 5. 檢查資料庫結構
-    log("\n[5/6] 檢查資料庫結構...", "info");
-    const dataDir = path.join(process.cwd(), "data");
+    // 5. 創建啟動腳本
+    log("\n[5/7] 創建啟動腳本...", "info");
+    createStartScript();
 
-    if (!directoryExists(dataDir) || fs.readdirSync(dataDir).length === 0) {
-      log("資料庫目錄不存在或為空，需要初始化資料庫...", "info");
+    // 6. 更新後端 Dockerfile 以使用啟動腳本
+    log("\n[6/7] 更新後端 Dockerfile...", "info");
+    updateBackendDockerfile();
 
-      // 啟動資料庫容器
-      log("啟動資料庫容器...", "info");
-      runCommand("docker-compose up -d db");
+    // 7. 啟動整個系統
+    log("\n[7/7] 構建並啟動系統...", "info");
+    runCommand("docker-compose down");
+    runCommand("docker-compose up -d --build");
 
-      // 等待資料庫就緒
-      log("等待資料庫就緒...", "info");
-      setTimeout(() => {
-        // 執行 Prisma 遷移
-        log("執行 Prisma 遷移...", "info");
-        try {
-          runCommand(
-            "cd voting-system-be && npx prisma migrate dev --name init"
-          );
-
-          // 6. 啟動整個系統
-          startSystem();
-        } catch (error) {
-          log("資料庫遷移失敗！", "error");
-          process.exit(1);
-        }
-      }, 10000); // 等待10秒
-    } else {
-      log("資料庫目錄已存在，跳過初始化步驟", "info");
-
-      // 6. 啟動整個系統
-      startSystem();
-    }
+    log("\n=== 系統啟動成功! ===", "success");
+    log("前端訪問地址: http://localhost:4200", "info");
+    log("後端API地址: http://localhost:3000", "info");
+    log("\n提示：初次啟動後端容器會自動執行資料庫遷移", "info");
   } catch (error) {
     log(`腳本執行失敗: ${error.message}`, "error");
     process.exit(1);
   }
-}
-
-function startSystem() {
-  log("\n[6/6] 重新構建並啟動系統...", "info");
-  runCommand("docker-compose down");
-  runCommand("docker-compose up -d --build");
-
-  log("\n=== 系統啟動成功! ===", "success");
-  log("前端訪問地址: http://localhost:4200", "info");
-  log("後端API地址: http://localhost:3000", "info");
 }
 
 // 執行主程序
