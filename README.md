@@ -59,11 +59,7 @@ cd voting-system
 此專案提供自動化腳本，可自動處理前後端代碼的獲取、更新、配置與啟動：
 
 ```bash
-# 設定腳本執行權限
-chmod +x update-and-run.sh
-
-# 執行腳本
-./update-and-run.sh
+node update-and-run.js
 ```
 
 腳本會自動執行以下操作：
@@ -133,7 +129,7 @@ docker image prune      # 移除未使用 Image 檔案
 當前後端代碼有更新時，只需再次執行自動化腳本：
 
 ```bash
-./update-and-run.sh
+node update-and-run.js
 ```
 
 ### 重設資料庫
@@ -148,5 +144,5 @@ docker-compose down
 rm -rf data
 
 # 重新執行自動化腳本
-./update-and-run.sh
+node update-and-run.js
 ```
