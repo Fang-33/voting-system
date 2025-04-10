@@ -69,5 +69,9 @@ ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
 
-# 資料庫資料檔案
+# 前後端專案目錄
+voting-system-fe/
+voting-system-be/
+
+# 資料庫資料目錄
 data/
